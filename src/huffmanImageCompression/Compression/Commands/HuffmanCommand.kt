@@ -6,10 +6,10 @@ package huffmanImageCompression.Compression.Commands
 class HuffmanCommand : ICommand {
 
     override fun Do() {
-        throw UnsupportedOperationException()
+        println("Do Huffman")
     }
 
     override fun Undo() {
-        throw UnsupportedOperationException()
+        println("Undo Huffman")
     }
 }

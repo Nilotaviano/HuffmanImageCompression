@@ -22,8 +22,8 @@
         <Button minHeight="25.0" minWidth="48.0" mnemonicParsing="false" onAction="#returnToPreviousState"
                 prefHeight="25.0" prefWidth="64.0" text="Voltar"/>
         <Button mnemonicParsing="false" onAction="#restoreImage" text="Restaurar imagem"/>
-        <Button mnemonicParsing="false" text="Desfazer"/>
-        <Button mnemonicParsing="false" text="Próximo"/>
+        <Button fx:id="undoBtn" mnemonicParsing="false" onAction="#undo" text="Desfazer"/>
+        <Button fx:id="nextBtn" mnemonicParsing="false" onAction="#next" text="Próximo"/>
     </HBox>
     <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
         <Region prefHeight="29.0" prefWidth="110.0" HBox.hgrow="SOMETIMES"/>

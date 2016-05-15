@@ -6,10 +6,10 @@ package huffmanImageCompression.Compression.Commands
 class DCTCommand : ICommand {
 
     override fun Do() {
-        throw UnsupportedOperationException()
+        println("Do DCT")
     }
 
     override fun Undo() {
-        throw UnsupportedOperationException()
+        println("Undo DCT")
     }
 }

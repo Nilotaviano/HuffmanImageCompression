@@ -6,10 +6,10 @@ package huffmanImageCompression.Compression.Commands
 class QuantizationCommand : ICommand {
 
     override fun Do() {
-        throw UnsupportedOperationException()
+        println("Do Quantization")
     }
 
     override fun Undo() {
-        throw UnsupportedOperationException()
+        println("Undo Quantization")
     }
 }

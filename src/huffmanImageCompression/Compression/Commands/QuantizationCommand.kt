@@ -5,11 +5,11 @@ package huffmanImageCompression.Compression.Commands
  */
 class QuantizationCommand : ICommand {
 
-    override fun Do() {
+    override fun execute() {
         println("Do Quantization")
     }
 
-    override fun Undo() {
+    override fun undo() {
         println("Undo Quantization")
     }
 }

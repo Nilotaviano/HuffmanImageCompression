@@ -5,11 +5,11 @@ package huffmanImageCompression.Compression.Commands
  */
 class DCTCommand : ICommand {
 
-    override fun Do() {
+    override fun execute() {
         println("Do DCT")
     }
 
-    override fun Undo() {
+    override fun undo() {
         println("Undo DCT")
     }
 }

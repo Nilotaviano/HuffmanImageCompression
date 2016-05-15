@@ -45,10 +45,5 @@ object ImageUtils {
         return gray
     }
 
-    fun getCorrectedIndex(index: Int, maxIndex: Int) =
-            when {
-                index < 0 -> 1
-                index > maxIndex -> maxIndex
-                else -> index
-            }
+    fun imageToGrayScaleMat(image: Image) = convertToGrayScale(imageToMat(image))
 }

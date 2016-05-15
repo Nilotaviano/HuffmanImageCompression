@@ -12,15 +12,62 @@ class DCTCommand : ICommand {
 
     private val maxValue = 255
 
-
     override fun execute() {
-        val desiredType = CvType.CV_8SC4
+        val desiredType = CvType.CV_8SC1
         val shiftAmount = -Math.ceil(maxValue.toDouble() / 2).toInt()
         val blockIterator = BlockIterator(Context.mat)
         val processedMat = Mat(Context.mat.size(), desiredType)
         val processedMatIterator = BlockIterator(processedMat)
 
-        // O(WTF)
+        while (blockIterator.hasNext()) {
+            val oldBlock = blockIterator.next()
+            val newBlock = processedMatIterator.next()
+            shiftInterval(oldBlock, shiftAmount, desiredType).copyTo(newBlock)
+            println(newBlock.dump())
+            dct(newBlock).copyTo(newBlock)
+            println()
+            println(newBlock.dump())
+            break
+        }
+        println(BlockIterator(Context.mat).next().dump())
+        println()
+        println(BlockIterator(processedMat).next().dump())
+
+        Context.mat = processedMat
+    }
+
+    /**
+     * http://stackoverflow.com/a/8311564
+     */
+    fun dct(sourceMat: Mat): Mat {
+        val resultMat: Mat = Mat(sourceMat.size(), sourceMat.type())
+
+        for (col in 0..sourceMat.cols() - 1) {
+            for (row in 0..sourceMat.rows() - 1) {
+                resultMat.put(row, col, 0.0)
+                for (i in 0..sourceMat.cols() - 1) {
+                    for (j in 0..sourceMat.rows() - 1) {
+                        var currentDCTMatValue = resultMat.get(row, col).first()
+                        val matValue = sourceMat.get(j, i).first()
+                        currentDCTMatValue += matValue * Math.cos(Math.PI / sourceMat.cols() * (i + 1 / 2) * col) * Math.cos(Math.PI / (sourceMat.rows()) * (j + 1 / 2) * row)
+
+                        resultMat.put(row, col, currentDCTMatValue)
+                    }
+                }
+            }
+        }
+
+        return resultMat
+    }
+
+
+    override fun undo() {
+        val desiredType = CvType.CV_8UC1
+        val shiftAmount = Math.ceil(maxValue.toDouble() / 2).toInt()
+        val blockIterator = BlockIterator(Context.mat)
+        val processedMat = Mat(Context.mat.size(), desiredType)
+        val processedMatIterator = BlockIterator(processedMat)
+
         while (blockIterator.hasNext()) {
             val oldBlock = blockIterator.next()
             val newBlock = processedMatIterator.next()
@@ -39,32 +86,11 @@ class DCTCommand : ICommand {
             for (col in 0..block.cols() - 1) {
                 val pixel = block.get(row, col)
 
-                for (i in 0..pixel.size - 1) {
-                    pixel[i] = pixel[i] + shift
-                }
+                pixel[0] = pixel[0] + shift
 
                 newBlock.put(row, col, *pixel)
             }
         }
         return newBlock
-    }
-
-    override fun undo() {
-        val desiredType = CvType.CV_8UC4
-        val shiftAmount = Math.ceil(maxValue.toDouble() / 2).toInt()
-        val blockIterator = BlockIterator(Context.mat)
-        val processedMat = Mat(Context.mat.size(), desiredType)
-        val processedMatIterator = BlockIterator(processedMat)
-
-        // O(WTF)
-        while (blockIterator.hasNext()) {
-            val oldBlock = blockIterator.next()
-            val newBlock = processedMatIterator.next()
-            shiftInterval(oldBlock, shiftAmount, desiredType).copyTo(newBlock)
-            break
-        }
-        println(BlockIterator(processedMat).next().dump())
-
-        Context.mat = processedMat
     }
 }

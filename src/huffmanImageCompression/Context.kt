@@ -13,7 +13,7 @@ object Context {
         get() = _image
         set(value) {
             if (value != null) {
-                mat = ImageUtils.imageToMat(value)
+                mat = ImageUtils.imageToGrayScaleMat(value)
             }
 
             _image = value

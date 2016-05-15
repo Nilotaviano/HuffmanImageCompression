@@ -13,7 +13,7 @@ class BlockIterator(val mat: Mat, val blockSize: Int = 8) : Iterable<Mat>, Itera
     override fun hasNext(): Boolean = rowIndex < mat.rows() || colIndex < mat.cols()
 
     override fun next(): Mat {
-        val subMat = mat.submat(rowIndex, rowIndex + blockSize - 1, colIndex, colIndex + blockSize - 1)
+        val subMat = mat.submat(rowIndex, rowIndex + blockSize, colIndex, colIndex + blockSize)
 
         if (colIndex >= mat.cols()) {
             colIndex = 0

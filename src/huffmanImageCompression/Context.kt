@@ -19,5 +19,5 @@ object Context {
             _image = value
         }
 
-    var mat: Mat? = null
+    var mat: Mat = Mat()
 }

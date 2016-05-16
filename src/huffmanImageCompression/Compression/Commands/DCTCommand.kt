@@ -59,6 +59,39 @@ class DCTCommand : ICommand {
 
         return resultMat
     }
+    
+    fun idct(sourceMat: Mat){
+        val resultMat: Mat = Mat(sourceMat.size(), sourceMat.type())
+        
+        for (col in 0..sourceMat.cols() - 1) {
+            for (row in 0..sourceMat.rows() - 1) {
+                resultMat.put(row, col, 1/4 * sourceMat.get(0, 0).first())
+                
+                for (i in 1..sourceMat.cols() - 1) {
+                    var temp = resultMat.get(row, col).first()
+                    temp += 1/2 * sourceMat.get(0, i).first()
+                    
+                    resultMat.put(row, col, temp)
+                }
+                for (j in 1..sourceMat.rows() - 1) {
+                    var temp = resultMat.get(row, col).first()
+                    temp += 1/2 * sourceMat.get(j, 0).first()
+                    
+                    resultMat.put(row, col, temp)
+                }
+                
+                for (i in 1..sourceMat.cols() - 1) {
+                    for (j in 1..sourceMat.rows() - 1) {
+                        var temp = resultMat.get(row, col).first()
+                        temp += sourceMat.get(j, i).first() * Math.cos(Math.PI/sourceMat.cols()*(col+ 1/2)*i)*Math.cos(Math.PI/sourceMat.rows()*(row+1/2)*j)
+                        
+                        resultMat.put(row, col, temp)
+                    }
+                }
+                resultMat.put(row, col, resultMat.get(row, col).first() * 2 / sourceMat.cols() * 2 / sourceMat.rows())
+            }
+        }
+    }
 
 
     override fun undo() {

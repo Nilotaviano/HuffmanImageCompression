@@ -1,6 +1,7 @@
 package huffmanImageCompression
 
 import huffmanImageCompression.Compression.FCompression
+import huffmanImageCompression.Utils.ImageUtils
 import javafx.application.Application
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
@@ -56,7 +57,7 @@ class MainMenuState : Application(), IState {
             if (file != null) {
                 val image = Image(file.inputStream())
                 if (!image.isError) {
-                    Context.image = image
+                    Context.image = ImageUtils.mat2Image(ImageUtils.imageToGrayScaleMat(image))
                     imageView.image = Context.image
                 } else {
                     printErrorMsg(actionTarget, "Erro ao ler imagem")

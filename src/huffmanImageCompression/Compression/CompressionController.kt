@@ -69,6 +69,7 @@ class CompressionController {
             println(BlockIterator(Context.mat).next().dump())
 
         }
+        imageView!!.image = ImageUtils.mat2Image(Context.mat)
     }
 
     fun next() {
@@ -87,6 +88,7 @@ class CompressionController {
                 commandLabels[commandIterator.nextIndex()].font = Font.font("Verdana", FontWeight.BOLD, 12.0)
             }
         }
+        imageView!!.image = ImageUtils.mat2Image(Context.mat)
     }
 
     fun returnToPreviousState() {

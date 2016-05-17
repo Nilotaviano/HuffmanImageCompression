@@ -1,13 +1,10 @@
 package huffmanImageCompression.Compression
 
+import huffmanImageCompression.*
 import huffmanImageCompression.Compression.Commands.DCTCommand
 import huffmanImageCompression.Compression.Commands.HuffmanCommand
 import huffmanImageCompression.Compression.Commands.ICommand
 import huffmanImageCompression.Compression.Commands.QuantizationCommand
-import huffmanImageCompression.Context
-import huffmanImageCompression.MainMenuState
-import huffmanImageCompression.ObservableIterator
-import huffmanImageCompression.StateManager
 import huffmanImageCompression.Utils.ImageUtils
 import huffmanImageCompression.Utils.UIUtils
 import javafx.beans.binding.Bindings
@@ -56,19 +53,35 @@ class CompressionController {
     }
 
     fun undo() {
+        println("undo")
+        println("Matriz antes de desfazer ${commandLabels[commandIterator.previousIndex()].text}")
+        println(BlockIterator(Context.mat).next().dump())
+
         if (commandIterator.hasPrevious()) {
             if (commandIterator.hasNext()) {
                 commandLabels[commandIterator.nextIndex()].font = Font.font("Verdana", FontWeight.NORMAL, 12.0)
             }
+
             commandIterator.previous().undo()
             commandLabels[commandIterator.nextIndex()].font = Font.font("Verdana", FontWeight.BOLD, 12.0)
+
+            println("Matriz após desfazer ${commandLabels[commandIterator.nextIndex()].text}")
+            println(BlockIterator(Context.mat).next().dump())
+
         }
     }
 
     fun next() {
+        println("next")
+        println("Matriz antes de aplicar ${commandLabels[commandIterator.nextIndex()].text}")
+        println(BlockIterator(Context.mat).next().dump())
+
         if (commandIterator.hasNext()) {
             commandLabels[commandIterator.nextIndex()].font = Font.font("Verdana", FontWeight.NORMAL, 12.0)
             commandIterator.next().execute()
+
+            println("Matriz após aplicar ${commandLabels[commandIterator.previousIndex()].text}")
+            println(BlockIterator(Context.mat).next().dump())
 
             if (commandIterator.hasNext()) {
                 commandLabels[commandIterator.nextIndex()].font = Font.font("Verdana", FontWeight.BOLD, 12.0)

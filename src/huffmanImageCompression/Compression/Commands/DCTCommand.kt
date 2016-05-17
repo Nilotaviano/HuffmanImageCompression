@@ -20,18 +20,18 @@ class DCTCommand : ICommand {
 
         val mat = Context.mat
         val blockIterator = BlockIterator(mat)
-        val processedMat = Mat(mat.size(), mat.type())
-        val processedMatIterator = BlockIterator(processedMat)
+        val resultMat = Mat(mat.size(), mat.type())
+        val resultMatIterator = BlockIterator(resultMat)
 
         shiftInterval(mat, mat, shiftAmount)
 
         while (blockIterator.hasNext()) {
-            val oldBlock = blockIterator.next()
-            val newBlock = processedMatIterator.next()
-            dct(oldBlock, newBlock)
+            val block = blockIterator.next()
+            val resultBlock = resultMatIterator.next()
+            dct(block, resultBlock)
         }
 
-        Context.mat = processedMat
+        Context.mat = resultMat
     }
 
     fun dct(sourceMat: Mat, resultMat: Mat) {
@@ -47,19 +47,19 @@ class DCTCommand : ICommand {
 
         val mat = Context.mat
         val blockIterator = BlockIterator(mat)
-        val processedMat = Mat(mat.size(), mat.type())
-        val processedMatIterator = BlockIterator(processedMat)
+        val resultMat = Mat(mat.size(), mat.type())
+        val resultMatIterator = BlockIterator(resultMat)
 
         while (blockIterator.hasNext()) {
-            val oldBlock = blockIterator.next()
-            val newBlock = processedMatIterator.next()
+            val block = blockIterator.next()
+            val resultBlock = resultMatIterator.next()
 
-            idct(oldBlock, newBlock)
+            idct(block, resultBlock)
         }
 
-        shiftInterval(processedMat, processedMat, shiftAmount)
+        shiftInterval(resultMat, resultMat, shiftAmount)
 
-        Context.mat = processedMat
+        Context.mat = resultMat
     }
 
     fun idct(sourceMat: Mat, resultMat: Mat) {

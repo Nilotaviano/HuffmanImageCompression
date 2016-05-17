@@ -1,6 +1,5 @@
 package huffmanImageCompression
 
-import org.opencv.core.CvException
 import org.opencv.core.Mat
 
 /**
@@ -18,17 +17,14 @@ class BlockIterator(val mat: Mat, val blockSize: Int = 8) : Iterable<Mat>, Itera
             rowIndex + blockSize
         else
             mat.rows() - 1
-        var subMat = Mat()
 
         val submatCols = if (colIndex + blockSize < mat.cols())
             colIndex + blockSize
         else
             mat.cols() - 1
-        try {
-            subMat = mat.submat(rowIndex, submatRows, colIndex, submatCols)
-        } catch(e: CvException) {
-            println(e)
-        }
+
+        val subMat = mat.submat(rowIndex, submatRows, colIndex, submatCols)
+
         if (colIndex + blockSize >= mat.cols()) {
             colIndex = 0
             rowIndex += blockSize

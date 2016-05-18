@@ -14,7 +14,7 @@ class DCTCommand : ICommand {
     private val maxValue = 255
 
     override fun execute() {
-        val shiftAmount = -Math.ceil(maxValue.toDouble() / 2).toInt()
+        val shiftAmount = -Math.floor(maxValue.toDouble() / 2).toInt()
 
         Context.mat.convertTo(Context.mat, CvType.CV_32FC1)
 
@@ -30,7 +30,7 @@ class DCTCommand : ICommand {
             val resultBlock = resultMatIterator.next()
             dct(block, resultBlock)
         }
-
+        resultMat.convertTo(resultMat, CvType.CV_32S)
         Context.mat = resultMat
     }
 
@@ -41,7 +41,7 @@ class DCTCommand : ICommand {
 
 
     override fun undo() {
-        val shiftAmount = Math.ceil(maxValue.toDouble() / 2).toInt()
+        val shiftAmount = Math.floor(maxValue.toDouble() / 2).toInt()
 
         Context.mat.convertTo(Context.mat, CvType.CV_32FC1)
 
@@ -59,6 +59,7 @@ class DCTCommand : ICommand {
 
         shiftInterval(resultMat, resultMat, shiftAmount)
 
+        resultMat.convertTo(resultMat, CvType.CV_32S)
         Context.mat = resultMat
     }
 

@@ -16,6 +16,12 @@ class HuffmanCommand : ICommand {
         val valueProbabilityMap = createEntriesMap(sourceMat)
         encode(sourceMat, valueProbabilityMap)
 
+        var arrayList = ArrayList<FloatArray>()
+        for (row in 0..sourceMat.rows() - 1) {
+            arrayList.add(FloatArray(sourceMat.cols()))
+        }
+
+        var array = arrayList.toArray()
     }
 
     private fun createEntriesMap(sourceMat: Mat): TreeMap<Int, Double> {
@@ -23,7 +29,7 @@ class HuffmanCommand : ICommand {
         var count = 0
         for (row in 0..sourceMat.rows() - 1) {
             for (col in 0..sourceMat.cols() - 1) {
-                val value = Math.round(sourceMat.get(row, col).first()).toInt()
+                val value = Math.floor(sourceMat.get(row, col).first()).toInt()
                 count++
 
                 valueProbabilityMap[value] =

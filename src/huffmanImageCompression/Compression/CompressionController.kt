@@ -47,9 +47,6 @@ class CompressionController {
         while (commandIterator.hasPrevious()) {
             commandIterator.previous().undo()
         }
-
-        Context.mat = ImageUtils.imageToMat(Context.image!!)
-        imageView!!.image = Context.image
     }
 
     fun undo() {

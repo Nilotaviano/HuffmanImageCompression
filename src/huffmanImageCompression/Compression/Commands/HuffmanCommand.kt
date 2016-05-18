@@ -2,6 +2,8 @@ package huffmanImageCompression.Compression.Commands
 
 import huffmanImageCompression.Compression.Commands.Huffman.Node
 import huffmanImageCompression.Context
+import huffmanImageCompression.Utils.ImageUtils
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import java.util.*
 
@@ -15,13 +17,6 @@ class HuffmanCommand : ICommand {
         var sourceMat = Context.mat
         val valueProbabilityMap = createEntriesMap(sourceMat)
         encode(sourceMat, valueProbabilityMap)
-
-        var arrayList = ArrayList<FloatArray>()
-        for (row in 0..sourceMat.rows() - 1) {
-            arrayList.add(FloatArray(sourceMat.cols()))
-        }
-
-        var array = arrayList.toArray()
     }
 
     private fun createEntriesMap(sourceMat: Mat): TreeMap<Int, Double> {
@@ -48,6 +43,21 @@ class HuffmanCommand : ICommand {
     }
 
     private fun encode(sourceMat: Mat, valueProbabilityMap: TreeMap<Int, Double>) {
+        val nodeQueue = buildNodeQueue(valueProbabilityMap)
+
+        val codeValueMap = buildCodeValueMap(nodeQueue)
+
+        for (kv in codeValueMap) {
+            Context.huffmanValuesTable[kv.key] = kv.value
+        }
+
+        Context.encodedMatrix = buildEncodedMatrix(codeValueMap, sourceMat)
+    }
+
+    /**
+     * Builds a priority queue that contains a tree-like structure representing
+     */
+    private fun buildNodeQueue(valueProbabilityMap: TreeMap<Int, Double>): PriorityQueue<Node> {
         var nodeQueue = PriorityQueue<Node>()
 
         for (entry in valueProbabilityMap) {
@@ -63,27 +73,54 @@ class HuffmanCommand : ICommand {
 
             nodeQueue.add(Node(left, right))
         }
-
-        var codeValueList = buildCodeValueMap(nodeQueue.first(), "");
-
-        var codeValueMap = TreeMap<String, Int>()
-        codeValueMap.putAll(codeValueList)
+        return nodeQueue
     }
 
-    private fun buildCodeValueMap(node: Node, code: String): ArrayList<Pair<String, Int>> {
-        var list = ArrayList<Pair<String, Int>>()
+    private fun buildCodeValueMap(nodeQueue: PriorityQueue<Node>): TreeMap<Int, String> {
+        val codeValueList = buildCodeValueList(nodeQueue.first(), "");
+
+        var codeValueMap = TreeMap<Int, String>()
+        codeValueMap.putAll(codeValueList)
+
+        return codeValueMap
+    }
+
+    private fun buildCodeValueList(node: Node, code: String): ArrayList<Pair<Int, String>> {
+        var list = ArrayList<Pair<Int, String>>()
 
         if (node.isLeafNode()) {
-            list.add(Pair(code, node.value))
+            list.add(Pair(node.value, code))
         } else {
-            list.addAll(buildCodeValueMap(node.leftNode!!, "${code}0"))
-            list.addAll(buildCodeValueMap(node.rightNode!!, "${code}1"))
+            list.addAll(buildCodeValueList(node.leftNode!!, "${code}0"))
+            list.addAll(buildCodeValueList(node.rightNode!!, "${code}1"))
         }
 
         return list
     }
 
+    private fun buildEncodedMatrix(codeValueMap: TreeMap<Int, String>, sourceMat: Mat): ArrayList<ArrayList<String>> {
+        var bidimensionalArray = ImageUtils.createGenericBidimensionalArray(sourceMat.cols(), sourceMat.rows(), "")
+
+        for (row in 0..sourceMat.rows() - 1) {
+            for (col in 0..sourceMat.cols() - 1) {
+                bidimensionalArray[row][col] = codeValueMap[sourceMat.get(row, col).first().toInt()]!!
+            }
+        }
+
+        return bidimensionalArray
+    }
+
     override fun undo() {
-        println("Undo Huffman")
+        val huffmanValuesTable = Context.huffmanValuesTable
+        val encodedMatrix = Context.encodedMatrix
+        val decodedMat = Mat(Context.mat.size(), CvType.CV_32S)
+
+        for (row in 0..encodedMatrix.size - 1) {
+            for (col in 0..encodedMatrix[row].size - 1) {
+                val value = huffmanValuesTable[encodedMatrix[row][col]]!!
+                decodedMat.put(row, col, intArrayOf(value))
+            }
+        }
+        Context.mat = decodedMat
     }
 }

@@ -8,6 +8,7 @@ import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
 import org.opencv.imgproc.Imgproc
 import java.io.ByteArrayInputStream
+import java.util.*
 
 object ImageUtils {
     // http://stackoverflow.com/a/34784966
@@ -46,4 +47,20 @@ object ImageUtils {
     }
 
     fun imageToGrayScaleMat(image: Image) = convertToGrayScale(imageToMat(image))
+
+    fun <T> createGenericBidimensionalArray(x: Int, y: Int, initialValue: T): ArrayList<ArrayList<T>> {
+        var result = ArrayList<ArrayList<T>>(y)
+
+        for (row in 0..y - 1) {
+            var array = ArrayList<T>(x)
+
+            for (i  in 0..x - 1) {
+                array.add(i, initialValue)
+            }
+
+            result.add(array)
+        }
+
+        return result
+    }
 }

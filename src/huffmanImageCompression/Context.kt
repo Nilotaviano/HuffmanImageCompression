@@ -22,5 +22,6 @@ object Context {
 
     var mat: Mat = Mat()
 
-    var huffmanTable = HashMap<String, Int>()
+    var huffmanValuesTable = BidirectionalHuffmanTable<String, Int>()
+    var encodedMatrix = ArrayList<ArrayList<String>>(0)
 }

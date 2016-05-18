@@ -6,13 +6,10 @@ import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Size
 
-/**
- * Created by nilot on 12/05/2016.
- */
 class QuantizationCommand : ICommand {
 
     val quantMatArray =
-            arrayOf(doubleArrayOf(16.0, 11.0, 10.0, 16.0, 24.0, 40.0, 51.0, 61.0),
+            arrayListOf(doubleArrayOf(16.0, 11.0, 10.0, 16.0, 24.0, 40.0, 51.0, 61.0),
                     doubleArrayOf(12.0, 12.0, 14.0, 19.0, 26.0, 58.0, 60.0, 55.0),
                     doubleArrayOf(14.0, 13.0, 16.0, 24.0, 40.0, 57.0, 69.0, 56.0),
                     doubleArrayOf(14.0, 17.0, 22.0, 29.0, 51.0, 87.0, 80.0, 62.0),

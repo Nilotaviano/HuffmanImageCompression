@@ -8,7 +8,7 @@ class Node : Comparable<Node> {
             var result = _probability
 
             if (_leftNode != null && _rightNode != null) {
-                result = _leftNode!!.probability + _rightNode!!._probability
+                result = _leftNode!!.probability + _rightNode!!.probability
             }
 
             return result

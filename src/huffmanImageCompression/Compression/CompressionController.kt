@@ -5,6 +5,7 @@ import huffmanImageCompression.Compression.Commands.DCTCommand
 import huffmanImageCompression.Compression.Commands.HuffmanCommand
 import huffmanImageCompression.Compression.Commands.ICommand
 import huffmanImageCompression.Compression.Commands.QuantizationCommand
+import huffmanImageCompression.Utils.FileUtils
 import huffmanImageCompression.Utils.ImageUtils
 import huffmanImageCompression.Utils.UIUtils
 import javafx.beans.binding.Bindings
@@ -15,6 +16,8 @@ import javafx.scene.control.ScrollPane
 import javafx.scene.image.ImageView
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import javafx.stage.FileChooser
+import java.io.File
 import java.util.*
 
 class CompressionController {
@@ -47,6 +50,8 @@ class CompressionController {
         while (commandIterator.hasPrevious()) {
             commandIterator.previous().undo()
         }
+
+        imageView!!.image = ImageUtils.mat2Image(Context.mat)
     }
 
     fun undo() {
@@ -93,6 +98,21 @@ class CompressionController {
     }
 
     fun saveImage() {
+        val userDirectoryPath = "${System.getProperty("user.home")}/Desktop"
+        var userDirectory = File(userDirectoryPath);
+        if (!userDirectory.canRead()) {
+            userDirectory = File("c:/")
+        }
+        val fileChooser = FileChooser()
+        fileChooser.title = "Escolha o local"
+        fileChooser.initialDirectory = userDirectory
+        fileChooser.initialFileName = "imagemComprimida.pdi"
+        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Arquivo PDI", "*.pdi"))
 
+        val file = fileChooser.showSaveDialog(Context.stage)
+
+        if (file != null) {
+            FileUtils.saveToPDIFile(file)
+        }
     }
 }

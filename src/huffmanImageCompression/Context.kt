@@ -20,7 +20,12 @@ object Context {
             _image = value
         }
 
-    var mat: Mat = Mat()
+    private var _mat: Mat = Mat()
+    var mat: Mat
+        get() = _mat
+        set(value) {
+            _mat = value
+        }
 
     var huffmanValuesTable = BidirectionalHuffmanTable<String, Int>()
     var encodedMatrix = ArrayList<ArrayList<String>>(0)

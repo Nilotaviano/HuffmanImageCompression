@@ -1,15 +1,18 @@
 package huffmanImageCompression
 
 import huffmanImageCompression.Compression.FCompression
+import huffmanImageCompression.Utils.FileUtils
 import huffmanImageCompression.Utils.ImageUtils
 import javafx.application.Application
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.geometry.Insets
+import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.Separator
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.GridPane
@@ -18,6 +21,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Text
 import javafx.stage.FileChooser
 import javafx.stage.Stage
+import java.io.File
 
 class MainMenuState : Application(), IState {
 
@@ -45,13 +49,18 @@ class MainMenuState : Application(), IState {
         imageView.isPreserveRatio = true
         grid.add(imageView, 0, 0)
 
-        val fileChooser = FileChooser()
-        fileChooser.title = "Selecione uma imagem"
-        fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg", "*.bmp"))
-
-        val fileSelection = Label("Selecionar arquivo: ")
-        val fileSelectionButton = Button("...")
-        fileSelectionButton.onAction = EventHandler<ActionEvent> {
+        val imageSelectionLabel = Label("Selecionar imagem: ")
+        val imageSelectionButton = Button("...")
+        imageSelectionButton.onAction = EventHandler<ActionEvent> {
+            val userDirectoryPath = "${System.getProperty("user.home")}/Desktop"
+            var userDirectory = File(userDirectoryPath);
+            if (!userDirectory.canRead()) {
+                userDirectory = File("c:/")
+            }
+            val fileChooser = FileChooser()
+            fileChooser.title = "Selecione uma imagem"
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg", "*.bmp"))
+            fileChooser.initialDirectory = userDirectory
             val file = fileChooser.showOpenDialog(stage)
 
             if (file != null) {
@@ -65,9 +74,38 @@ class MainMenuState : Application(), IState {
             }
         }
 
+        val pdiFileSelectionLabel = Label("Selecionar arquivo PDI: ")
+        val pdiFileSelectionButton = Button("...")
+        pdiFileSelectionButton.onAction = EventHandler<ActionEvent> {
+            val userDirectoryPath = "${System.getProperty("user.home")}/Desktop"
+            var userDirectory = File(userDirectoryPath);
+            if (!userDirectory.canRead()) {
+                userDirectory = File("c:/")
+            }
+            val fileChooser = FileChooser()
+            fileChooser.title = "Selecione uma arquivo PDI"
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Arquivo PDI", "*.pdi"))
+            fileChooser.initialDirectory = userDirectory
+            val file = fileChooser.showOpenDialog(stage)
+
+            if (file != null) {
+                try {
+                    Context.image = FileUtils.readImageFromPDIFile(file)
+                    imageView.image = Context.image
+                } catch(e: Exception) {
+                    printErrorMsg(actionTarget, "Erro ao ler arquivo PDI")
+                }
+            } else {
+                printErrorMsg(actionTarget, "Erro ao ler imagem")
+            }
+        }
+
         val hbFileSelection = HBox(10.0)
-        hbFileSelection.children.add(fileSelection)
-        hbFileSelection.children.add(fileSelectionButton)
+        hbFileSelection.children.add(imageSelectionLabel)
+        hbFileSelection.children.add(imageSelectionButton)
+        hbFileSelection.children.add(Separator(Orientation.VERTICAL))
+        hbFileSelection.children.add(pdiFileSelectionLabel)
+        hbFileSelection.children.add(pdiFileSelectionButton)
         grid.add(hbFileSelection, 0, 2)
 
         val startBtn = setupButton(actionTarget, stage, "Iniciar", FCompression())

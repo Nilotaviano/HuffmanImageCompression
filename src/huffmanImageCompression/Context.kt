@@ -29,4 +29,5 @@ object Context {
 
     var huffmanValuesTable = BidirectionalHuffmanTable<String, Int>()
     var encodedMatrix = ArrayList<ArrayList<String>>(0)
+    var imageWasFromPDIFile = false
 }

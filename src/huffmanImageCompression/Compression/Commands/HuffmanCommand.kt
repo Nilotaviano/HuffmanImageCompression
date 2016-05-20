@@ -3,6 +3,7 @@ package huffmanImageCompression.Compression.Commands
 import huffmanImageCompression.Compression.Commands.Huffman.Node
 import huffmanImageCompression.Context
 import huffmanImageCompression.Utils.ImageUtils
+import javafx.beans.property.FloatPropertyBase
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import java.util.*
@@ -10,8 +11,7 @@ import java.util.*
 /**
  * Created by nilot on 12/05/2016.
  */
-class HuffmanCommand : ICommand {
-
+class HuffmanCommand(val avgPixelLengthProperty: FloatPropertyBase) : ICommand {
 
     override fun execute() {
         var sourceMat = Context.mat
@@ -44,7 +44,6 @@ class HuffmanCommand : ICommand {
 
     private fun encode(sourceMat: Mat, valueProbabilityMap: TreeMap<Int, Double>) {
         val nodeQueue = buildNodeQueue(valueProbabilityMap)
-
         val codeValueMap = buildCodeValueMap(nodeQueue)
 
         for (kv in codeValueMap) {
@@ -100,12 +99,19 @@ class HuffmanCommand : ICommand {
 
     private fun buildEncodedMatrix(codeValueMap: TreeMap<Int, String>, sourceMat: Mat): ArrayList<ArrayList<String>> {
         var bidimensionalArray = ImageUtils.createGenericBidimensionalArray(sourceMat.cols(), sourceMat.rows(), "")
+        var totalPixelLength = 0
+        val totalPixelCount = sourceMat.rows() * sourceMat.cols()
 
         for (row in 0..sourceMat.rows() - 1) {
             for (col in 0..sourceMat.cols() - 1) {
-                bidimensionalArray[row][col] = codeValueMap[sourceMat.get(row, col).first().toInt()]!!
+                val code = codeValueMap[sourceMat.get(row, col).first().toInt()]!!
+                totalPixelLength += code.length
+                bidimensionalArray[row][col] = code
             }
         }
+
+        val avgPixelLength = totalPixelLength.toFloat() / totalPixelCount
+        avgPixelLengthProperty.set(avgPixelLength)
 
         return bidimensionalArray
     }

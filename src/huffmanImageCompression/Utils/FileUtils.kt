@@ -13,16 +13,18 @@ import java.util.*
  */
 object FileUtils {
     fun readImageFromPDIFile(file: File): Image {
-        val (mat, huffmanValuesTable) = deserializeFromPDIFile(file)
-        Context.mat = mat
+        val (encodedMat, huffmanValuesTable, encodedMatrix) = deserializeFromPDIFile(file)
+        Context.mat = encodedMat
         Context.huffmanValuesTable = huffmanValuesTable
+        Context.encodedMatrix = encodedMatrix
 
-        return ImageUtils.mat2Image(mat)
+        return ImageUtils.mat2Image(encodedMat)
     }
 
-    private fun deserializeFromPDIFile(file: File): Pair<Mat, BidirectionalHuffmanTable<String, Int>> {
+    private fun deserializeFromPDIFile(file: File): Triple<Mat, BidirectionalHuffmanTable<String, Int>, ArrayList<ArrayList<String>>> {
         val (huffmanValuesTable, bitSet, matrixSize) = readSerializableObjects(file)
-        var mat = Mat(matrixSize.first, matrixSize.second, CvType.CV_32S)
+        var encodedMat = Mat(matrixSize.first, matrixSize.second, CvType.CV_32S)
+        var encodedMatrix = ImageUtils.createGenericBidimensionalArray(matrixSize.second, matrixSize.first, "")
         var count = 0
 
         for (row in 0..matrixSize.first - 1) {
@@ -41,14 +43,15 @@ object FileUtils {
                     val value = huffmanValuesTable[code]
 
                     if (value != null) {
-                        mat.put(row, col, intArrayOf(value))
+                        encodedMatrix[row][col] = code
+                        encodedMat.put(row, col, intArrayOf(value))
                         matchFound = true
                     }
                 }
             }
         }
 
-        return Pair(mat, huffmanValuesTable)
+        return Triple(encodedMat, huffmanValuesTable, encodedMatrix)
     }
 
     private fun readSerializableObjects(file: File): Triple<BidirectionalHuffmanTable<String, Int>, BitSet, Pair<Int, Int>> {

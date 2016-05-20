@@ -9,6 +9,7 @@ import huffmanImageCompression.Utils.FileUtils
 import huffmanImageCompression.Utils.ImageUtils
 import huffmanImageCompression.Utils.UIUtils
 import javafx.beans.binding.Bindings
+import javafx.beans.property.FloatPropertyBase
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -30,7 +31,22 @@ class CompressionController {
     @FXML var labelQuantization: Label? = null
     @FXML var labelHuffman: Label? = null
 
-    var commands = LinkedList<ICommand>(Arrays.asList(DCTCommand(), QuantizationCommand(), HuffmanCommand()))
+    val avgPixelLength: Float? = null
+    val avgPixelLengthProperty = object : FloatPropertyBase() {
+        override fun invalidated() {
+            //ignore
+        }
+
+        override fun getBean(): Float? {
+            return avgPixelLength
+        }
+
+        override fun getName(): String {
+            return "hasPreviousProperty"
+        }
+    };
+
+    var commands = LinkedList<ICommand>(Arrays.asList(DCTCommand(), QuantizationCommand(), HuffmanCommand(avgPixelLengthProperty)))
     var commandIterator = ObservableIterator(commands.listIterator())
     var commandLabels = LinkedList<Label>()
 
@@ -44,6 +60,17 @@ class CompressionController {
         saveBtn!!.disableProperty().bind(commandIterator.hasNextProperty)
         undoBtn!!.disableProperty().bind(Bindings.not(commandIterator.hasPreviousProperty))
         nextBtn!!.disableProperty().bind(Bindings.not(commandIterator.hasNextProperty))
+
+        checkIfSourceImageIsFromPDIFile()
+    }
+
+    private fun checkIfSourceImageIsFromPDIFile() {
+        if (Context.imageWasFromPDIFile)
+            while (commandIterator.hasNext())
+                commandIterator.next()
+        labelDCT!!.font = Font.font("Verdana", FontWeight.NORMAL, 12.0)
+
+
     }
 
     fun restoreImage() {

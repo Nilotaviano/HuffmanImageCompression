@@ -68,6 +68,7 @@ class MainMenuState : Application(), IState {
                 if (!image.isError) {
                     Context.image = ImageUtils.mat2Image(ImageUtils.imageToGrayScaleMat(image))
                     imageView.image = Context.image
+                    Context.imageWasFromPDIFile = false
                 } else {
                     printErrorMsg(actionTarget, "Erro ao ler imagem")
                 }
@@ -92,6 +93,8 @@ class MainMenuState : Application(), IState {
                 try {
                     Context.image = FileUtils.readImageFromPDIFile(file)
                     imageView.image = Context.image
+                    Context.imageWasFromPDIFile = true
+
                 } catch(e: Exception) {
                     printErrorMsg(actionTarget, "Erro ao ler arquivo PDI")
                 }

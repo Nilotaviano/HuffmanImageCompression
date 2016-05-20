@@ -3,7 +3,7 @@ package huffmanImageCompression.Compression.Commands
 import huffmanImageCompression.Compression.Commands.Huffman.Node
 import huffmanImageCompression.Context
 import huffmanImageCompression.Utils.ImageUtils
-import javafx.beans.property.FloatPropertyBase
+import javafx.beans.property.StringPropertyBase
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import java.util.*
@@ -11,7 +11,7 @@ import java.util.*
 /**
  * Created by nilot on 12/05/2016.
  */
-class HuffmanCommand(val avgPixelLengthProperty: FloatPropertyBase) : ICommand {
+class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand {
 
     override fun execute() {
         var sourceMat = Context.mat
@@ -111,7 +111,7 @@ class HuffmanCommand(val avgPixelLengthProperty: FloatPropertyBase) : ICommand {
         }
 
         val avgPixelLength = totalPixelLength.toFloat() / totalPixelCount
-        avgPixelLengthProperty.set(avgPixelLength)
+        avgPixelLengthProperty.set(avgPixelLength.toString())
 
         return bidimensionalArray
     }
@@ -128,5 +128,6 @@ class HuffmanCommand(val avgPixelLengthProperty: FloatPropertyBase) : ICommand {
             }
         }
         Context.mat = decodedMat
+        avgPixelLengthProperty.set("0")
     }
 }

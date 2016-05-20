@@ -9,7 +9,7 @@ import huffmanImageCompression.Utils.FileUtils
 import huffmanImageCompression.Utils.ImageUtils
 import huffmanImageCompression.Utils.UIUtils
 import javafx.beans.binding.Bindings
-import javafx.beans.property.FloatPropertyBase
+import javafx.beans.property.StringPropertyBase
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -30,14 +30,15 @@ class CompressionController {
     @FXML var labelDCT: Label? = null
     @FXML var labelQuantization: Label? = null
     @FXML var labelHuffman: Label? = null
+    @FXML var avgLengthLabel: Label? = null
 
-    val avgPixelLength: Float? = null
-    val avgPixelLengthProperty = object : FloatPropertyBase() {
+    val avgPixelLength = "0"
+    val avgPixelLengthProperty = object : StringPropertyBase() {
         override fun invalidated() {
             //ignore
         }
 
-        override fun getBean(): Float? {
+        override fun getBean(): String {
             return avgPixelLength
         }
 
@@ -62,6 +63,8 @@ class CompressionController {
         nextBtn!!.disableProperty().bind(Bindings.not(commandIterator.hasNextProperty))
 
         checkIfSourceImageIsFromPDIFile()
+        avgLengthLabel!!.textProperty().bind(avgPixelLengthProperty)
+        avgPixelLengthProperty.set(avgPixelLength)
     }
 
     private fun checkIfSourceImageIsFromPDIFile() {

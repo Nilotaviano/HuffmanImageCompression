@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8"
           fx:controller="huffmanImageCompression.Compression.CompressionController">
     <columnConstraints>
@@ -28,7 +29,51 @@
         <Button fx:id="nextBtn" mnemonicParsing="false" onAction="#next" text="Próximo"/>
     </HBox>
     <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
-        <Region prefHeight="45.0" prefWidth="174.0" HBox.hgrow="ALWAYS"/>
+        <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+            <HBox>
+                <Label text="Média s/ compressão:">
+                    <padding>
+                        <Insets left="15.0"/>
+                    </padding>
+                    <font>
+                        <Font size="10.0"/>
+                    </font>
+                </Label>
+                <Label text="8">
+                    <font>
+                        <Font name="System Bold" size="10.0"/>
+                    </font>
+                </Label>
+                <Label text=" bits/pixel">
+                    <font>
+                        <Font size="10.0"/>
+                    </font>
+                </Label>
+            </HBox>
+            <HBox>
+                <Label text="Média c/ compressão:">
+                    <font>
+                        <Font size="10.0"/>
+                    </font>
+                    <padding>
+                        <Insets left="15.0"/>
+                    </padding>
+                </Label>
+                <Label fx:id="avgLengthLabel" text="0">
+                    <font>
+                        <Font name="System Bold" size="10.0"/>
+                    </font>
+                </Label>
+                <Label text=" bits/pixel">
+                    <font>
+                        <Font size="10.0"/>
+                    </font>
+                </Label>
+            </HBox>
+        </VBox>
         <VBox maxWidth="107.0" prefHeight="45.0" prefWidth="87.0" HBox.hgrow="ALWAYS">
             <Label fx:id="labelDCT" text="1- DCT">
                 <font>
@@ -46,6 +91,6 @@
                 </font>
             </Label>
         </VBox>
-        <Region prefHeight="45.0" prefWidth="168.0" HBox.hgrow="ALWAYS"/>
+        <Region prefHeight="45.0" prefWidth="72.0" HBox.hgrow="ALWAYS"/>
     </HBox>
 </GridPane>

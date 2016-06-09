@@ -1,6 +1,6 @@
-package huffmanImageCompression.Compression
+package huffmanImageCompression.GUI.Compression
 
-import huffmanImageCompression.IState
+import huffmanImageCompression.GUI.IState
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent

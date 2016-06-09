@@ -1,7 +1,7 @@
 package huffmanImageCompression.Compression.Commands
 
-import huffmanImageCompression.Compression.Commands.Huffman.Node
 import huffmanImageCompression.Context
+import huffmanImageCompression.DSA.Node
 import huffmanImageCompression.Utils.ImageUtils
 import javafx.beans.property.StringPropertyBase
 import org.opencv.core.CvType
@@ -11,12 +11,17 @@ import java.util.*
 /**
  * Created by nilot on 12/05/2016.
  */
-class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand {
+class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase, val mseProperty: StringPropertyBase) : ICommand {
 
-    override fun execute() {
-        var sourceMat = Context.mat
-        val valueProbabilityMap = createEntriesMap(sourceMat)
-        encode(sourceMat, valueProbabilityMap)
+    override fun execute(mat: Mat): Mat {
+        val valueProbabilityMap = createEntriesMap(mat)
+        encode(mat, valueProbabilityMap)
+
+        if (!Context.imageWasFromPDIFile) {
+            calculateAndSetMSE(mat)
+        }
+
+        return mat // Huffman doesn't change the displayed matrix
     }
 
     private fun createEntriesMap(sourceMat: Mat): TreeMap<Int, Double> {
@@ -42,6 +47,17 @@ class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand 
         return valueProbabilityMap
     }
 
+    // Ugly as fuck, but I just want to get this done
+    private fun calculateAndSetMSE(compressedMat: Mat) {
+        val sourceMat = ImageUtils.imageToGrayScaleMat(Context.image!!)
+
+        // UNDO Quantization and DCT
+        var uncompressedMat = QuantizationCommand().undo(compressedMat)
+        uncompressedMat = DCTCommand().undo(uncompressedMat)
+
+        mseProperty.set(ImageUtils.mse(sourceMat, uncompressedMat).toString())
+    }
+
     private fun encode(sourceMat: Mat, valueProbabilityMap: TreeMap<Int, Double>) {
         val nodeQueue = buildNodeQueue(valueProbabilityMap)
         val codeValueMap = buildCodeValueMap(nodeQueue)
@@ -57,7 +73,7 @@ class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand 
      * Builds a priority queue that contains a tree-like structure representing
      */
     private fun buildNodeQueue(valueProbabilityMap: TreeMap<Int, Double>): PriorityQueue<Node> {
-        var nodeQueue = PriorityQueue<Node>()
+        val nodeQueue = PriorityQueue<Node>()
 
         for (entry in valueProbabilityMap) {
             nodeQueue.add(Node(entry.value, entry.key))
@@ -78,14 +94,14 @@ class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand 
     private fun buildCodeValueMap(nodeQueue: PriorityQueue<Node>): TreeMap<Int, String> {
         val codeValueList = buildCodeValueList(nodeQueue.first(), "");
 
-        var codeValueMap = TreeMap<Int, String>()
+        val codeValueMap = TreeMap<Int, String>()
         codeValueMap.putAll(codeValueList)
 
         return codeValueMap
     }
 
     private fun buildCodeValueList(node: Node, code: String): ArrayList<Pair<Int, String>> {
-        var list = ArrayList<Pair<Int, String>>()
+        val list = ArrayList<Pair<Int, String>>()
 
         if (node.isLeafNode()) {
             list.add(Pair(node.value, code))
@@ -98,7 +114,7 @@ class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand 
     }
 
     private fun buildEncodedMatrix(codeValueMap: TreeMap<Int, String>, sourceMat: Mat): ArrayList<ArrayList<String>> {
-        var bidimensionalArray = ImageUtils.createGenericBidimensionalArray(sourceMat.cols(), sourceMat.rows(), "")
+        val bidimensionalArray = ImageUtils.createGenericBidimensionalArray(sourceMat.cols(), sourceMat.rows(), "")
         var totalPixelLength = 0
         val totalPixelCount = sourceMat.rows() * sourceMat.cols()
 
@@ -110,13 +126,15 @@ class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand 
             }
         }
 
-        val avgPixelLength = totalPixelLength.toFloat() / totalPixelCount
-        avgPixelLengthProperty.set(avgPixelLength.toString())
+        if (!Context.imageWasFromPDIFile) {
+            val avgPixelLength = totalPixelLength.toFloat() / totalPixelCount
+            avgPixelLengthProperty.set(avgPixelLength.toString())
+        }
 
         return bidimensionalArray
     }
 
-    override fun undo() {
+    override fun undo(mat: Mat): Mat {
         val huffmanValuesTable = Context.huffmanValuesTable
         val encodedMatrix = Context.encodedMatrix
         val decodedMat = Mat(Context.mat.size(), CvType.CV_32S)
@@ -127,7 +145,7 @@ class HuffmanCommand(val avgPixelLengthProperty: StringPropertyBase) : ICommand 
                 decodedMat.put(row, col, intArrayOf(value))
             }
         }
-        Context.mat = decodedMat
         avgPixelLengthProperty.set("0")
+        return decodedMat
     }
 }

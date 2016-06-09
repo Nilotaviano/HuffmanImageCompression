@@ -1,7 +1,6 @@
 package huffmanImageCompression.Compression.Commands
 
-import huffmanImageCompression.BlockIterator
-import huffmanImageCompression.Context
+import huffmanImageCompression.DSA.BlockIterator
 import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Size
@@ -20,8 +19,7 @@ class QuantizationCommand : ICommand {
 
     val quantMat = createQuantMat()
 
-    override fun execute() {
-        val mat = Context.mat
+    override fun execute(mat: Mat): Mat {
         val blockIterator = BlockIterator(mat)
 
         val resultMat = Mat(mat.size(), mat.type())
@@ -34,11 +32,10 @@ class QuantizationCommand : ICommand {
             divideByQuantMat(block, resultBlock)
         }
 
-        Context.mat = resultMat
+        return resultMat
     }
 
-    override fun undo() {
-        val mat = Context.mat
+    override fun undo(mat: Mat): Mat {
         val blockIterator = BlockIterator(mat)
 
         val resultMat = Mat(mat.size(), mat.type())
@@ -51,7 +48,7 @@ class QuantizationCommand : ICommand {
             multiplyByQuantMat(block, resultBlock)
         }
 
-        Context.mat = resultMat
+        return resultMat
     }
 
     fun divideByQuantMat(mat: Mat, resultMat: Mat) {

@@ -1,4 +1,4 @@
-package huffmanImageCompression
+package huffmanImageCompression.DSA
 
 import java.io.Serializable
 import java.util.*
@@ -6,7 +6,7 @@ import java.util.*
 /**
  * Created by nilot on 18/05/2016.
  */
-class BidirectionalHuffmanTable <K, N : Number> : Serializable {
+class BidirectionalHashMap <K, N : Number> : Serializable {
     private var map1 = TreeMap<K, N>()
     private var map2 = TreeMap<N, K>()
 

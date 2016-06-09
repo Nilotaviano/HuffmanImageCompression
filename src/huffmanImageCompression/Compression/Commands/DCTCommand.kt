@@ -1,7 +1,6 @@
 package huffmanImageCompression.Compression.Commands
 
-import huffmanImageCompression.BlockIterator
-import huffmanImageCompression.Context
+import huffmanImageCompression.DSA.BlockIterator
 import org.opencv.core.Core
 import org.opencv.core.CvType
 import org.opencv.core.Mat
@@ -13,17 +12,24 @@ class DCTCommand : ICommand {
 
     private val maxValue = 255
 
-    override fun execute() {
+    override fun execute(mat: Mat): Mat {
         val shiftAmount = -Math.floor(maxValue.toDouble() / 2).toInt()
 
-        Context.mat.convertTo(Context.mat, CvType.CV_32FC1)
+        mat.convertTo(mat, CvType.CV_32FC1)
 
-        val mat = Context.mat
         val blockIterator = BlockIterator(mat)
         val resultMat = Mat(mat.size(), mat.type())
         val resultMatIterator = BlockIterator(resultMat)
 
+        println("shift")
+        println("Matriz antes do shift")
+        println(BlockIterator(mat).next().dump())
+
         shiftInterval(mat, mat, shiftAmount)
+
+        println("shift")
+        println("Matriz após shift")
+        println(BlockIterator(mat).next().dump())
 
         while (blockIterator.hasNext()) {
             val block = blockIterator.next()
@@ -31,21 +37,19 @@ class DCTCommand : ICommand {
             dct(block, resultBlock)
         }
         resultMat.convertTo(resultMat, CvType.CV_32S)
-        Context.mat = resultMat
+        return resultMat
     }
 
     fun dct(sourceMat: Mat, resultMat: Mat) {
         Core.dct(sourceMat, resultMat)
     }
-    
 
 
-    override fun undo() {
+    override fun undo(mat: Mat): Mat {
         val shiftAmount = Math.floor(maxValue.toDouble() / 2).toInt()
 
-        Context.mat.convertTo(Context.mat, CvType.CV_32FC1)
+        mat.convertTo(mat, CvType.CV_32FC1)
 
-        val mat = Context.mat
         val blockIterator = BlockIterator(mat)
         val resultMat = Mat(mat.size(), mat.type())
         val resultMatIterator = BlockIterator(resultMat)
@@ -60,7 +64,7 @@ class DCTCommand : ICommand {
         shiftInterval(resultMat, resultMat, shiftAmount)
 
         resultMat.convertTo(resultMat, CvType.CV_32S)
-        Context.mat = resultMat
+        return resultMat
     }
 
     fun idct(sourceMat: Mat, resultMat: Mat) {

@@ -1,5 +1,6 @@
 package huffmanImageCompression
 
+import huffmanImageCompression.DSA.BidirectionalHashMap
 import huffmanImageCompression.Utils.ImageUtils
 import javafx.scene.image.Image
 import javafx.stage.Stage
@@ -27,7 +28,9 @@ object Context {
             _mat = value
         }
 
-    var huffmanValuesTable = BidirectionalHuffmanTable<String, Int>()
+    var huffmanValuesTable = BidirectionalHashMap<String, Int>()
     var encodedMatrix = ArrayList<ArrayList<String>>(0)
     var imageWasFromPDIFile = false
+
+    var sourceFileSize = 0L // In bytes
 }

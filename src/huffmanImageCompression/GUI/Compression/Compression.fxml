@@ -91,6 +91,15 @@
                 </font>
             </Label>
         </VBox>
-        <Region prefHeight="45.0" prefWidth="72.0" HBox.hgrow="ALWAYS"/>
+        <VBox HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                <Label text="Taxa de compressão: "/>
+                <Label fx:id="compressionRateLabel" text="?"/>
+            </HBox>
+            <HBox alignment="CENTER">
+                <Label text="MSE: "/>
+                <Label fx:id="mseLabel" text="?"/>
+            </HBox>
+        </VBox>
     </HBox>
 </GridPane>

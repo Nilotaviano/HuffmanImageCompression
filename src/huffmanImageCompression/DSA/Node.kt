@@ -1,4 +1,4 @@
-package huffmanImageCompression.Compression.Commands.Huffman
+package huffmanImageCompression.DSA
 
 class Node : Comparable<Node> {
 

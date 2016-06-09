@@ -1,4 +1,4 @@
-package huffmanImageCompression
+package huffmanImageCompression.GUI
 
 import javafx.stage.Stage
 

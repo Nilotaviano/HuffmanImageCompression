@@ -1,4 +1,4 @@
-package huffmanImageCompression
+package huffmanImageCompression.DSA
 
 import javafx.beans.property.BooleanPropertyBase
 

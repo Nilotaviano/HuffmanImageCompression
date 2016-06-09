@@ -1,7 +1,7 @@
 package huffmanImageCompression.Utils
 
-import huffmanImageCompression.BidirectionalHuffmanTable
 import huffmanImageCompression.Context
+import huffmanImageCompression.DSA.BidirectionalHashMap
 import javafx.scene.image.Image
 import org.opencv.core.CvType
 import org.opencv.core.Mat
@@ -21,10 +21,10 @@ object FileUtils {
         return ImageUtils.mat2Image(encodedMat)
     }
 
-    private fun deserializeFromPDIFile(file: File): Triple<Mat, BidirectionalHuffmanTable<String, Int>, ArrayList<ArrayList<String>>> {
+    private fun deserializeFromPDIFile(file: File): Triple<Mat, BidirectionalHashMap<String, Int>, ArrayList<ArrayList<String>>> {
         val (huffmanValuesTable, bitSet, matrixSize) = readSerializableObjects(file)
-        var encodedMat = Mat(matrixSize.first, matrixSize.second, CvType.CV_32S)
-        var encodedMatrix = ImageUtils.createGenericBidimensionalArray(matrixSize.second, matrixSize.first, "")
+        val encodedMat = Mat(matrixSize.first, matrixSize.second, CvType.CV_32S)
+        val encodedMatrix = ImageUtils.createGenericBidimensionalArray(matrixSize.second, matrixSize.first, "")
         var count = 0
 
         for (row in 0..matrixSize.first - 1) {
@@ -54,7 +54,7 @@ object FileUtils {
         return Triple(encodedMat, huffmanValuesTable, encodedMatrix)
     }
 
-    private fun readSerializableObjects(file: File): Triple<BidirectionalHuffmanTable<String, Int>, BitSet, Pair<Int, Int>> {
+    private fun readSerializableObjects(file: File): Triple<BidirectionalHashMap<String, Int>, BitSet, Pair<Int, Int>> {
         val fileInputStream = FileInputStream(file)
         val objectInputStream = ObjectInputStream(fileInputStream)
         val objectsRead = objectInputStream.readObject()
@@ -66,11 +66,11 @@ object FileUtils {
                 }
 
         if (triple != null
-                && triple.first is BidirectionalHuffmanTable<*, *>
+                && triple.first is BidirectionalHashMap<*, *>
                 && triple.second is BitSet
                 && triple.third is Pair<*, *>) {
             @Suppress("UNCHECKED_CAST")
-            return triple as Triple<BidirectionalHuffmanTable<String, Int>, BitSet, Pair<Int, Int>>
+            return triple as Triple<BidirectionalHashMap<String, Int>, BitSet, Pair<Int, Int>>
         } else {
             throw Exception("Objeto lido não foi o esperado")
         }
@@ -82,10 +82,11 @@ object FileUtils {
         val objectOutputStream = ObjectOutputStream(fileOutputStream)
 
         objectOutputStream.writeObject(objects)
+        objectOutputStream.close()
         fileOutputStream.close()
     }
 
-    private fun createSerializableObject(): Triple<BidirectionalHuffmanTable<String, Int>, BitSet, Pair<Int, Int>> {
+    private fun createSerializableObject(): Triple<BidirectionalHashMap<String, Int>, BitSet, Pair<Int, Int>> {
         val bitSet = encodedMatrixToBitSet()
         val size = Pair(Context.encodedMatrix.size, Context.encodedMatrix.first().size)
         val objects = Triple(Context.huffmanValuesTable, bitSet, size)
@@ -94,7 +95,7 @@ object FileUtils {
     }
 
     private fun encodedMatrixToBitSet(): BitSet {
-        var bitSet = BitSet()
+        val bitSet = BitSet()
         val encodedMatrix = Context.encodedMatrix
         var count = 0
 
@@ -112,4 +113,6 @@ object FileUtils {
 
         return bitSet
     }
+
+    fun getCompressionRate(sourceFileSize: Long, compressedFileSize: Long) = (sourceFileSize.toDouble() / compressedFileSize.toDouble()).toString()
 }

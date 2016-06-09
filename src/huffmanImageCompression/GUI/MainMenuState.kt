@@ -1,6 +1,7 @@
-package huffmanImageCompression
+package huffmanImageCompression.GUI
 
-import huffmanImageCompression.Compression.FCompression
+import huffmanImageCompression.Context
+import huffmanImageCompression.GUI.Compression.FCompression
 import huffmanImageCompression.Utils.FileUtils
 import huffmanImageCompression.Utils.ImageUtils
 import javafx.application.Application
@@ -69,6 +70,7 @@ class MainMenuState : Application(), IState {
                     Context.image = ImageUtils.mat2Image(ImageUtils.imageToGrayScaleMat(image))
                     imageView.image = Context.image
                     Context.imageWasFromPDIFile = false
+                    Context.sourceFileSize = file.length()
                 } else {
                     printErrorMsg(actionTarget, "Erro ao ler imagem")
                 }

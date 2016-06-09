@@ -49,10 +49,10 @@ object ImageUtils {
     fun imageToGrayScaleMat(image: Image) = convertToGrayScale(imageToMat(image))
 
     fun <T> createGenericBidimensionalArray(x: Int, y: Int, initialValue: T): ArrayList<ArrayList<T>> {
-        var result = ArrayList<ArrayList<T>>(y)
+        val result = ArrayList<ArrayList<T>>(y)
 
         for (row in 0..y - 1) {
-            var array = ArrayList<T>(x)
+            val array = ArrayList<T>(x)
 
             for (i  in 0..x - 1) {
                 array.add(i, initialValue)
@@ -62,5 +62,19 @@ object ImageUtils {
         }
 
         return result
+    }
+
+    fun mse(sourceMat: Mat, compressedMat: Mat): Double {
+        var accumulator = 0.0;
+
+        for (row in 0..sourceMat.rows() - 1) {
+            for (col in 0..sourceMat.cols() - 1) {
+                val pixel = sourceMat.get(row, col).first()
+                val compressedPixel = compressedMat.get(row, col).first()
+                val error = compressedPixel - pixel
+                accumulator += Math.pow(error, 2.0)
+            }
+        }
+        return accumulator / (sourceMat.height() * sourceMat.width())
     }
 }
